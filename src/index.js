@@ -95,13 +95,15 @@ export default class Headroom extends Component {
     this.props.parent().removeEventListener('scroll', this.handleScroll)
     window.removeEventListener('scroll', this.handleScroll)
     this.props.parent().removeEventListener('resize', this.handleResize)
-    raf.cancel(this.update)
-    raf.cancel(this.setHeightOffset)
+    raf.cancel(this.updateRafId)
+    raf.cancel(this.setHeightOffsetRafId)
   }
 
   setRef = ref => (this.inner = ref)
 
+  setHeightOffsetRafId = null
   setHeightOffset = () => {
+    this.setHeightOffsetRafId = null
     this.setState({
       height: this.inner.offsetHeight,
     })
@@ -176,14 +178,14 @@ export default class Headroom extends Component {
   handleScroll = () => {
     if (!this.scrollTicking) {
       this.scrollTicking = true
-      raf(this.update)
+      this.updateRafId = raf(this.update)
     }
   }
 
   handleResize = () => {
     if (!this.resizeTicking) {
       this.resizeTicking = true
-      raf(this.setHeightOffset)
+      this.setHeightOffsetRafId = raf(this.setHeightOffset)
     }
   }
 
@@ -220,7 +222,9 @@ export default class Headroom extends Component {
     })
   }
 
+  updateRafId = null
   update = () => {
+    this.updateRafId = null
     this.currentScrollY = this.getScrollY()
 
     if (!this.isOutOfBound(this.currentScrollY)) {
