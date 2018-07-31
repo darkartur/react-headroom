@@ -95,6 +95,8 @@ export default class Headroom extends Component {
     this.props.parent().removeEventListener('scroll', this.handleScroll)
     window.removeEventListener('scroll', this.handleScroll)
     this.props.parent().removeEventListener('resize', this.handleResize)
+    raf.cancel(this.update)
+    raf.cancel(this.setHeightOffset)
   }
 
   setRef = ref => (this.inner = ref)
